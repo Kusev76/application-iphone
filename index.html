@@ -2,15 +2,12 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="СМЕНА">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><rect width='180' height='180' rx='36' fill='%231a1c1e'/><rect x='20' y='20' width='140' height='140' rx='16' fill='none' stroke='%23e8a33d' stroke-width='6'/><text x='90' y='110' text-anchor='middle' font-family='serif' font-size='80' font-weight='bold' fill='%23e8a33d'>С</text></svg>">
-<link rel="manifest" href="data:application/json,{'name':'СМЕНА','short_name':'СМЕНА','start_url':'.','display':'standalone','background_color':'%231a1c1e','theme_color':'%231a1c1e'}">
+<meta name="mobile-web-app-capable" content="yes">
 <title>СМЕНА — система развития</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg-base:#1a1c1e;
@@ -35,20 +32,21 @@
     -webkit-user-select:none;
     user-select:none;
     -webkit-tap-highlight-color:transparent;
+    -webkit-touch-callout:none;
+    touch-action:manipulation;
   }
   body{
     background:
       radial-gradient(circle at 15% 0%, rgba(232,163,61,0.05), transparent 40%),
       var(--bg-base);
     color:var(--text);
-    font-family:'IBM Plex Sans', sans-serif;
-    padding:max(28px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 60px max(16px, env(safe-area-inset-left));
+    font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    padding:20px 16px 60px;
     min-height:100vh;
     min-height:100dvh;
   }
   .wrap{max-width:1040px; margin:0 auto;}
 
-  /* Все остальные стили остаются те же, что в оригинале */
   .header{
     display:flex; align-items:flex-end; justify-content:space-between;
     border-bottom:2px solid var(--line);
@@ -59,124 +57,174 @@
   .brand-mark{
     width:38px; height:38px; border:2px solid var(--amber); border-radius:4px;
     display:flex; align-items:center; justify-content:center;
-    font-family:'Oswald', sans-serif; font-weight:700; color:var(--amber); font-size:15px;
+    font-weight:700; color:var(--amber); font-size:15px;
   }
   .brand-text h1{
-    font-family:'Oswald', sans-serif; font-weight:600; font-size:22px;
+    font-weight:600; font-size:22px;
     letter-spacing:2px; margin:0; text-transform:uppercase;
   }
   .brand-text p{margin:2px 0 0; font-size:12px; color:var(--text-muted); letter-spacing:1px;}
   .shift-tag{
-    font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--text-faint);
+    font-family:monospace; font-size:12px; color:var(--text-faint);
     border:1px solid var(--line); border-radius:3px; padding:6px 10px;
     display:flex; align-items:center; gap:8px;
   }
-  .status-sep{color:var(--line);}
   .status-text{color:var(--amber);}
   .status-text.inactive{color:var(--text-faint);}
+  .dot{width:6px; height:6px; border-radius:50%; background:var(--amber); box-shadow:0 0 6px var(--amber);}
   .dot.inactive{background:var(--text-faint); box-shadow:none;}
   .header-right{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
-  .new-shift-btn, .close-shift-btn, .calendar-btn{
-    font-family:'IBM Plex Sans', sans-serif; font-weight:500; font-size:12.5px;
-    background:transparent; border-radius:4px; padding:8px 12px; cursor:pointer; transition:.15s;
+  
+  /* Исправленные кнопки */
+  button{
+    font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight:500; font-size:13px;
+    border-radius:6px; padding:10px 16px; 
+    cursor:pointer; transition:.15s;
     -webkit-tap-highlight-color:transparent;
+    touch-action:manipulation;
+    outline:none;
+    -webkit-appearance:none;
+    appearance:none;
+    min-height:44px;
+    min-width:44px;
   }
+  
   .new-shift-btn{
-    color:var(--amber); border:1px solid var(--amber-dim);
+    background:transparent; color:var(--amber); 
+    border:2px solid var(--amber-dim);
   }
-  .new-shift-btn:active{background:rgba(232,163,61,0.2);}
+  .new-shift-btn:active, .new-shift-btn:focus-visible{
+    background:rgba(232,163,61,0.15); border-color:var(--amber);
+  }
   .new-shift-btn:disabled{
     color:var(--text-faint); border-color:var(--line); opacity:0.5;
   }
+  
   .close-shift-btn{
-    color:var(--rust); border:1px solid var(--rust);
+    background:transparent; color:var(--rust); 
+    border:2px solid var(--rust);
   }
-  .close-shift-btn:active{background:rgba(193,85,74,0.2);}
+  .close-shift-btn:active, .close-shift-btn:focus-visible{
+    background:rgba(193,85,74,0.15);
+  }
+  
   .calendar-btn{
-    color:var(--text-muted); border:1px solid var(--line);
+    background:transparent; color:var(--text-muted); 
+    border:2px solid var(--line);
   }
-  .calendar-btn:active{color:var(--text);}
+  .calendar-btn:active, .calendar-btn:focus-visible{
+    color:var(--text); border-color:var(--text-muted);
+  }
+  
+  .done-btn{
+    background:transparent; color:var(--text); 
+    border:2px solid var(--line);
+    border-radius:6px; padding:8px 14px;
+    font-size:12px; min-height:44px; min-width:44px;
+  }
+  .done-btn:active, .done-btn:focus-visible{
+    border-color:var(--amber); color:var(--amber);
+  }
+  .done-btn:disabled{
+    opacity:.45; border-color:var(--line-soft); color:var(--text-faint);
+  }
+  
+  .ai-btn{
+    background:var(--amber); color:#20180a; 
+    border:none; border-radius:8px;
+    padding:12px 18px; font-size:14px; min-height:44px;
+  }
+  .ai-btn:active, .ai-btn:focus-visible{
+    filter:brightness(1.15);
+  }
+  .ai-btn:disabled{
+    background:var(--bg-panel-raised); color:var(--text-faint); 
+    border:2px solid var(--line); filter:none;
+  }
+  
+  .modal-close{
+    background:transparent; border:2px solid var(--line); color:var(--text-muted);
+    border-radius:6px; font-size:16px; padding:8px; min-height:44px; min-width:44px;
+  }
+  
   .hidden{display:none !important;}
-  .dot{width:6px; height:6px; border-radius:50%; background:var(--amber); box-shadow:0 0 6px var(--amber);}
 
   /* Modal */
   .modal-backdrop{
-    display:none; position:fixed; inset:0; background:rgba(10,11,12,0.72);
+    display:none; position:fixed; inset:0; background:rgba(10,11,12,0.85);
     align-items:center; justify-content:center; z-index:100; padding:20px;
   }
   .modal-backdrop.open{display:flex;}
   .modal-panel{
-    background:var(--bg-panel); border:1px solid var(--line); border-radius:8px;
-    width:100%; max-width:460px; max-height:88vh; max-height:88dvh; overflow-y:auto;
-    padding:20px; box-shadow:0 20px 50px rgba(0,0,0,0.5);
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:12px;
+    width:100%; max-width:460px; max-height:85vh; max-height:85dvh; 
+    overflow-y:auto; padding:20px; box-shadow:0 20px 50px rgba(0,0,0,0.5);
+    -webkit-overflow-scrolling:touch;
   }
   .modal-header{display:flex; align-items:flex-start; justify-content:space-between; gap:12px;}
   .modal-header h2{
-    font-family:'Oswald', sans-serif; font-size:16px; letter-spacing:1.5px; text-transform:uppercase;
-    margin:0;
+    font-weight:600; font-size:16px; letter-spacing:1.5px; text-transform:uppercase; margin:0;
   }
-  .modal-sub{font-size:11.5px; color:var(--text-muted); margin:4px 0 0;}
-  .modal-close{
-    background:transparent; border:1px solid var(--line); color:var(--text-muted);
-    width:28px; height:28px; border-radius:4px; cursor:pointer; flex:none; font-size:13px;
-    line-height:1;
-  }
+  .modal-sub{font-size:12px; color:var(--text-muted); margin:4px 0 0;}
+  
   .calendar-weekdays{
-    display:grid; grid-template-columns:repeat(7,1fr); gap:6px;
-    margin-top:18px; font-family:'IBM Plex Mono', monospace; font-size:10px;
+    display:grid; grid-template-columns:repeat(7,1fr); gap:4px;
+    margin-top:18px; font-family:monospace; font-size:10px;
     color:var(--text-faint); text-align:center; text-transform:uppercase;
   }
-  .calendar-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-top:8px;}
+  .calendar-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-top:6px;}
   .day-cell{
-    aspect-ratio:1; border-radius:4px; border:1px solid var(--line-soft);
+    aspect-ratio:1; border-radius:6px; border:1px solid var(--line-soft);
     display:flex; align-items:center; justify-content:center;
-    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--text);
-    cursor:pointer; transition:.12s;
+    font-family:monospace; font-size:12px; color:var(--text);
+    cursor:pointer; transition:.12s; min-height:36px;
   }
-  .day-cell:active{border-color:var(--amber);}
+  .day-cell:active{border-color:var(--amber); background:rgba(232,163,61,0.2);}
   .day-cell.today{border-color:var(--text);}
-  .day-cell.selected{border-color:var(--amber); box-shadow:0 0 0 1px var(--amber) inset;}
+  .day-cell.selected{border-color:var(--amber); box-shadow:0 0 0 2px var(--amber) inset;}
+  
   .day-detail{border-top:1px solid var(--line); margin-top:18px; padding-top:16px; min-height:70px;}
-  .day-detail-placeholder{font-size:12.5px; color:var(--text-faint); text-align:center; padding:16px 0;}
-  .day-detail-date{font-family:'Oswald', sans-serif; font-size:14px; letter-spacing:.5px; text-transform:capitalize;}
-  .day-detail-total{font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--text-muted); margin:6px 0 12px;}
+  .day-detail-placeholder{font-size:13px; color:var(--text-faint); text-align:center; padding:20px 0;}
+  .day-detail-date{font-weight:600; font-size:14px; letter-spacing:.5px; text-transform:capitalize;}
+  .day-detail-total{font-family:monospace; font-size:13px; color:var(--text-muted); margin:6px 0 12px;}
   .day-detail-total b{color:var(--amber);}
-  .day-detail-note{font-size:12.5px; color:var(--text-faint); font-style:italic;}
+  .day-detail-note{font-size:13px; color:var(--text-faint); font-style:italic;}
   .day-task-item{
     display:flex; justify-content:space-between; align-items:flex-start; gap:10px;
-    padding:9px 0; border-bottom:1px solid var(--line-soft);
+    padding:10px 0; border-bottom:1px solid var(--line-soft);
   }
   .day-task-item:last-child{border-bottom:none;}
   .day-task-cat{font-size:10px; letter-spacing:1px; text-transform:uppercase; font-weight:600;}
-  .day-task-name{font-size:12.5px; color:var(--text); margin-top:2px;}
-  .day-task-xp{font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--amber); flex:none;}
+  .day-task-name{font-size:13px; color:var(--text); margin-top:2px;}
+  .day-task-xp{font-family:monospace; font-size:12px; color:var(--amber); flex:none;}
 
   /* Hero */
   .hero{
     display:grid; grid-template-columns: 220px 1fr; gap:24px;
-    background:var(--bg-panel); border:1px solid var(--line); border-radius:8px;
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:10px;
     padding:24px; margin-bottom:22px;
   }
   .dial-box{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;}
   .dial-box svg{width:100%; height:auto; max-width:170px;}
   .dial-label{font-size:11px; letter-spacing:2px; color:var(--text-faint); text-transform:uppercase;}
-  .dial-level{font-family:'Oswald', sans-serif; font-size:15px; color:var(--amber); letter-spacing:1px;}
+  .dial-level{font-weight:600; font-size:15px; color:var(--amber); letter-spacing:1px;}
 
   .stats-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
   .stat{
-    background:var(--bg-panel-raised); border:1px solid var(--line-soft); border-radius:6px;
+    background:var(--bg-panel-raised); border:1px solid var(--line-soft); border-radius:8px;
     padding:14px 14px 12px;
   }
-  .stat-label{font-size:10.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-faint); margin-bottom:6px;}
-  .stat-value{font-family:'IBM Plex Mono', monospace; font-size:22px; font-weight:600;}
+  .stat-label{font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-faint); margin-bottom:6px;}
+  .stat-value{font-family:monospace; font-size:22px; font-weight:600;}
   .stat-value.amber{color:var(--amber);}
   .stat-value.rust{color:var(--rust);}
   .stat-sub{font-size:11px; color:var(--text-muted); margin-top:4px;}
   .xp-bar-track{
     grid-column:1 / -1; background:var(--bg-panel-raised); border:1px solid var(--line-soft);
-    border-radius:6px; padding:14px;
+    border-radius:8px; padding:14px;
   }
-  .xp-bar-top{display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted); margin-bottom:8px; font-family:'IBM Plex Mono',monospace;}
+  .xp-bar-top{display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted); margin-bottom:8px; font-family:monospace;}
   .xp-track{height:10px; background:var(--bg-base); border-radius:5px; overflow:hidden; border:1px solid var(--line);}
   .xp-fill{height:100%; background:linear-gradient(90deg, var(--amber-dim), var(--amber)); transition:width .5s ease;}
 
@@ -185,16 +233,16 @@
     display:flex; align-items:baseline; gap:10px; margin:30px 0 14px;
   }
   .section-title h2{
-    font-family:'Oswald', sans-serif; font-size:16px; letter-spacing:2px; text-transform:uppercase;
+    font-weight:600; font-size:16px; letter-spacing:2px; text-transform:uppercase;
     margin:0; color:var(--text);
   }
   .section-title .rule{flex:1; height:1px; background:var(--line);}
-  .section-title .count{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--text-faint);}
+  .section-title .count{font-family:monospace; font-size:12px; color:var(--text-faint);}
 
   /* Category cards */
   .lines{display:grid; grid-template-columns:repeat(auto-fit, minmax(230px,1fr)); gap:14px;}
   .line-card{
-    background:var(--bg-panel); border:1px solid var(--line); border-radius:8px;
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:10px;
     padding:16px; position:relative; overflow:hidden;
   }
   .line-card::before{
@@ -202,28 +250,18 @@
     background:var(--cat-color, var(--amber));
   }
   .line-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
-  .line-name{font-family:'Oswald', sans-serif; font-size:14px; letter-spacing:1px; text-transform:uppercase;}
-  .line-pct{font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--text-muted);}
+  .line-name{font-weight:600; font-size:14px; letter-spacing:1px; text-transform:uppercase;}
+  .line-pct{font-family:monospace; font-size:12px; color:var(--text-muted);}
   .line-track{height:6px; background:var(--bg-base); border-radius:3px; overflow:hidden; margin-bottom:14px; border:1px solid var(--line-soft);}
   .line-fill{height:100%; background:var(--cat-color, var(--amber));}
   .line-task-label{font-size:10px; letter-spacing:1.5px; color:var(--text-faint); text-transform:uppercase; margin-bottom:4px;}
   .line-task{font-size:13px; color:var(--text); margin-bottom:12px; min-height:36px; line-height:1.4;}
   .line-footer{display:flex; justify-content:space-between; align-items:center;}
-  .xp-tag{font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--amber);}
-  .done-btn{
-    font-family:'IBM Plex Sans', sans-serif; font-size:12px; font-weight:500;
-    background:transparent; color:var(--text); border:1px solid var(--line);
-    border-radius:4px; padding:7px 12px; cursor:pointer; transition:.15s;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .done-btn:active{border-color:var(--amber); color:var(--amber);}
-  .done-btn:disabled{
-    opacity:.45; border-color:var(--line-soft); color:var(--text-faint);
-  }
+  .xp-tag{font-family:monospace; font-size:12px; color:var(--amber);}
 
   /* AI panel */
   .ai-panel{
-    background:var(--bg-panel); border:1px dashed var(--amber-dim); border-radius:8px;
+    background:var(--bg-panel); border:2px dashed var(--amber-dim); border-radius:10px;
     padding:16px 18px; display:flex; align-items:center; justify-content:space-between; gap:16px;
     flex-wrap:wrap; margin-top:16px;
   }
@@ -234,68 +272,57 @@
   }
   .ai-text b{font-size:13px; letter-spacing:.5px;}
   .ai-text p{margin:2px 0 0; font-size:12px; color:var(--text-muted);}
-  .ai-btn{
-    font-family:'IBM Plex Sans', sans-serif; font-weight:500; font-size:13px;
-    background:var(--amber); color:#20180a; border:none; border-radius:5px;
-    padding:10px 16px; cursor:pointer; transition:.15s;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .ai-btn:active{filter:brightness(1.2);}
-  .ai-btn:disabled{
-    background:var(--bg-panel-raised); color:var(--text-faint); border:1px solid var(--line);
-  }
 
   /* Monthly log */
   .log-panel{
-    background:var(--bg-panel); border:1px solid var(--line); border-radius:8px; padding:18px;
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:10px; padding:18px;
   }
   .chart{display:flex; align-items:flex-end; gap:3px; height:110px; margin-top:6px;}
   .bar{
     flex:1; background:linear-gradient(180deg, var(--amber), var(--amber-dim));
-    border-radius:2px 2px 0 0; position:relative; min-width:4px;
-    opacity:.85;
+    border-radius:2px 2px 0 0; min-width:4px; opacity:.85;
   }
   .bar.today{background:linear-gradient(180deg,#fff, var(--amber));}
-  .chart-axis{display:flex; justify-content:space-between; font-size:10px; color:var(--text-faint); margin-top:6px; font-family:'IBM Plex Mono',monospace;}
+  .chart-axis{display:flex; justify-content:space-between; font-size:10px; color:var(--text-faint); margin-top:6px; font-family:monospace;}
 
   footer{margin-top:34px; text-align:center; font-size:11px; color:var(--text-faint); letter-spacing:1px;}
 
-  /* Mobile optimization */
-  @media(max-width:640px){
-    body{padding:max(20px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) 50px max(12px, env(safe-area-inset-left));}
+  /* Mobile fixes */
+  @media(max-width:768px){
+    body{padding:16px 12px 50px;}
     .header{align-items:stretch;}
     .header-right{width:100%; justify-content:space-between;}
     .shift-tag{width:100%; justify-content:center;}
-    .calendar-btn,.new-shift-btn,.close-shift-btn{flex:1;}
-    .brand-text h1{font-size:19px; letter-spacing:1.5px;}
+    .calendar-btn,.new-shift-btn,.close-shift-btn{flex:1; text-align:center;}
+    .brand-text h1{font-size:19px; letter-spacing:1px;}
     .brand-text p{font-size:11px;}
     .hero{grid-template-columns:1fr; padding:18px; gap:18px;}
-    .dial-box svg{max-width:150px;}
+    .dial-box svg{max-width:140px;}
     .stats-grid{grid-template-columns:1fr 1fr; gap:10px;}
     .section-title{margin:24px 0 12px;}
     .lines{grid-template-columns:1fr;}
     .ai-panel{flex-direction:column; align-items:stretch; padding:16px;}
-    .ai-btn{width:100%;}
+    .ai-btn{width:100%; text-align:center;}
     .log-panel{padding:14px;}
     .chart{gap:2px; height:90px;}
     .modal-panel{padding:16px;}
   }
 
   @media(max-width:400px){
-    body{padding:max(16px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) 44px max(8px, env(safe-area-inset-left));}
+    body{padding:12px 8px 40px;}
     .brand-mark{width:32px; height:32px; font-size:13px;}
     .brand-text h1{font-size:17px;}
     .shift-tag{font-size:11px; padding:5px 8px;}
-    .new-shift-btn,.close-shift-btn{font-size:11.5px; padding:8px 10px;}
+    button{font-size:12px; padding:8px 12px; min-height:40px;}
     .hero{padding:14px;}
-    .dial-box svg{max-width:130px;}
-    .stat{padding:11px 10px 10px;}
+    .dial-box svg{max-width:120px;}
+    .stat{padding:10px 8px 8px;}
     .stat-value{font-size:18px;}
-    .stat-label{font-size:9.5px;}
+    .stat-label{font-size:9px;}
     .line-card{padding:13px;}
     .line-task{min-height:0;}
     .chart-axis{font-size:9px;}
-    .day-cell{font-size:10px;}
+    .day-cell{font-size:11px; min-height:32px;}
     .calendar-weekdays{font-size:9px;}
   }
 </style>
@@ -312,10 +339,15 @@
       </div>
     </div>
     <div class="header-right">
-      <div class="shift-tag"><span class="dot" id="statusDot"></span><span id="shiftDate"></span><span class="status-sep">·</span><span class="status-text inactive" id="statusText">Смена не начата</span></div>
-      <button class="calendar-btn" id="calendarBtn" title="История смен">▦ Календарь</button>
-      <button class="new-shift-btn" id="startShiftBtn">Начать смену →</button>
-      <button class="close-shift-btn hidden" id="closeShiftBtn">Закрыть смену</button>
+      <div class="shift-tag">
+        <span class="dot inactive" id="statusDot"></span>
+        <span id="shiftDate">СМЕНА · сегодня</span>
+        <span>·</span>
+        <span class="status-text inactive" id="statusText">Смена не начата</span>
+      </div>
+      <button class="calendar-btn" id="calendarBtn" title="История смен">📅 Календарь</button>
+      <button class="new-shift-btn" id="startShiftBtn">▶ Начать смену</button>
+      <button class="close-shift-btn hidden" id="closeShiftBtn">⏹ Закрыть смену</button>
     </div>
   </div>
 
@@ -326,8 +358,8 @@
         <circle id="dialArc" cx="85" cy="85" r="72" fill="none" stroke="#e8a33d" stroke-width="10"
                 stroke-linecap="round" stroke-dasharray="452" stroke-dashoffset="452"
                 transform="rotate(-90 85 85)"/>
-        <text x="85" y="80" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="30" fill="#ede9e0" id="dialLevel">1</text>
-        <text x="85" y="99" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" letter-spacing="2" fill="#9a9d9f">УРОВЕНЬ</text>
+        <text x="85" y="80" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="30" fill="#ede9e0" id="dialLevel">1</text>
+        <text x="85" y="99" text-anchor="middle" font-family="sans-serif" font-size="10" letter-spacing="2" fill="#9a9d9f">УРОВЕНЬ</text>
       </svg>
       <div class="dial-label">выработка смены</div>
       <div class="dial-level" id="dialXpText">0 / 300 XP</div>
@@ -364,7 +396,7 @@
       <div class="ai-icon">◎</div>
       <div class="ai-text">
         <b>ИИ-наладчик</b>
-        <p id="aiSubtext">распределяет задания по участкам, чтобы нагрузка не была впустую</p>
+        <p id="aiSubtext">начните смену, чтобы получать и заменять задания</p>
       </div>
     </div>
     <button class="ai-btn" id="assignBtn" disabled>Назначить задание</button>
@@ -376,9 +408,10 @@
     <div class="chart-axis"><span>−30 дн</span><span>−15 дн</span><span>сегодня</span></div>
   </div>
 
-  <footer>СМЕНА · все данные сохраняются локально</footer>
+  <footer>СМЕНА · данные сохраняются на устройстве</footer>
 </div>
 
+<!-- Модальное окно календаря -->
 <div class="modal-backdrop" id="modalBackdrop">
   <div class="modal-panel">
     <div class="modal-header">
@@ -397,28 +430,40 @@
 </div>
 
 <script>
-  // ---------- Local Storage persistence ----------
-  const STORAGE_KEY = 'smena_progress_v2';
+// Ждём полной загрузки DOM
+document.addEventListener('DOMContentLoaded', function() {
+  
+  // ---------- Local Storage ----------
+  const STORAGE_KEY = 'smena_progress_v3';
   
   function saveState() {
-    const state = {
-      level, xp, xpToNext, totalXp, streak,
-      categories: categories.map(c => ({
-        key: c.key, name: c.name, color: c.color,
-        pool: c.pool, progress: c.progress, xp: c.xp,
-        task: c.task, done: c.done
-      })),
-      dayHistory, values,
-      currentDate: currentDate.toISOString(),
-      shiftIsActive
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    try {
+      const state = {
+        level, xp, xpToNext, totalXp, streak,
+        categories: categories.map(c => ({
+          key: c.key, name: c.name, color: c.color,
+          pool: c.pool, progress: c.progress, xp: c.xp,
+          task: c.task, done: c.done
+        })),
+        dayHistory: dayHistory.map(d => ({
+          date: d.date, xp: d.xp, tasks: d.tasks
+        })),
+        values: values,
+        currentDate: currentDate.toISOString(),
+        shiftIsActive
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      console.log('✅ Состояние сохранено');
+    } catch(e) {
+      console.error('Ошибка сохранения:', e);
+    }
   }
 
   function loadState() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) return false;
     try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) return false;
+      
       const state = JSON.parse(saved);
       level = state.level;
       xp = state.xp;
@@ -426,7 +471,6 @@
       totalXp = state.totalXp;
       streak = state.streak;
       
-      // Restore categories
       state.categories.forEach((sc, i) => {
         categories[i].progress = sc.progress;
         categories[i].xp = sc.xp;
@@ -434,39 +478,39 @@
         categories[i].done = sc.done;
       });
       
-      // Restore day history
       dayHistory.length = 0;
       values.length = 0;
       state.dayHistory.forEach(dh => {
-        dayHistory.push(dh);
+        dayHistory.push({ date: dh.date, xp: dh.xp, tasks: dh.tasks || [] });
         values.push(dh.xp);
       });
       
       currentDate = new Date(state.currentDate);
       shiftIsActive = state.shiftIsActive;
-      
       chartMax = Math.max(...values, 200);
+      
+      console.log('✅ Состояние загружено');
       return true;
     } catch(e) {
-      console.error('Failed to load state:', e);
+      console.error('Ошибка загрузки:', e);
       return false;
     }
   }
 
-  // ---------- state (начинаем с нуля) ----------
+  // ---------- Начальные данные ----------
   const categories = [
     { key:'sport', name:'Спорт', color:'#4a8c82',
       pool:['30 минут кардио', 'Силовая тренировка', 'Растяжка 15 минут', '10 000 шагов'],
-      progress:0, xp:80 },
+      progress:0, xp:80, task:'', done:false },
     { key:'study', name:'Учёба', color:'#5b7c99',
       pool:['Урок по JS — 40 минут', 'Верстка одного блока макета', 'Прочитать главу учебника', 'Решить 5 задач на алгоритмы'],
-      progress:0, xp:120 },
+      progress:0, xp:120, task:'', done:false },
     { key:'discipline', name:'Дисциплина', color:'#8a7ca8',
       pool:['Подъём без будильника x2', 'День без соцсетей', 'Планирование следующей смены', 'Разбор ошибок за неделю'],
-      progress:0, xp:60 },
+      progress:0, xp:60, task:'', done:false },
     { key:'creative', name:'Творчество', color:'#e8a33d',
       pool:['Набросок интерфейса', 'Мини-проект на 1 час', 'Изучить один новый приём в CSS', 'Довести старый проект до релиза'],
-      progress:0, xp:100 },
+      progress:0, xp:100, task:'', done:false },
   ];
 
   let level = 1;
@@ -474,25 +518,33 @@
   let xpToNext = 300;
   let totalXp = 0;
   let streak = 0;
+  let shiftIsActive = false;
+  let currentDate = new Date();
+  const values = [];
+  const dayHistory = [];
+  let chartMax = 200;
 
-  // Try to load saved state, if not - use defaults
+  // Загружаем сохранённое состояние или создаём новое
   const loaded = loadState();
   if (!loaded) {
-    categories.forEach(c => { c.task = c.pool[Math.floor(Math.random()*c.pool.length)]; c.done = false; });
+    // Новое состояние
+    categories.forEach(c => { 
+      c.task = c.pool[Math.floor(Math.random()*c.pool.length)]; 
+      c.done = false; 
+    });
     
-    // Initialize empty history
     const days = 30;
     const todayDate = new Date();
     for (let i=0; i<days; i++){
       const d = new Date(todayDate);
       d.setDate(d.getDate() - (days - 1 - i));
-      const v = 0;
-      values.push(v);
-      dayHistory.push({ date: d.toISOString(), xp: v, tasks: [] });
+      values.push(0);
+      dayHistory.push({ date: d.toISOString(), xp: 0, tasks: [] });
     }
     chartMax = 200;
   }
 
+  // ---------- DOM элементы ----------
   const linesEl = document.getElementById('lines');
   const dialArc = document.getElementById('dialArc');
   const dialLevel = document.getElementById('dialLevel');
@@ -502,17 +554,30 @@
   const totalXpVal = document.getElementById('totalXpVal');
   const streakVal = document.getElementById('streakVal');
   const doneTodayVal = document.getElementById('doneTodayVal');
-  let currentDate = loaded ? new Date(currentDate) : new Date();
   const shiftDate = document.getElementById('shiftDate');
+  const statusDot = document.getElementById('statusDot');
+  const statusText = document.getElementById('statusText');
+  const startShiftBtn = document.getElementById('startShiftBtn');
+  const closeShiftBtn = document.getElementById('closeShiftBtn');
+  const assignBtn = document.getElementById('assignBtn');
+  const aiSubtext = document.getElementById('aiSubtext');
+  const chartEl = document.getElementById('chart');
+  const calendarBtn = document.getElementById('calendarBtn');
+  const modalBackdrop = document.getElementById('modalBackdrop');
+  const modalClose = document.getElementById('modalClose');
+  const calendarWeekdays = document.getElementById('calendarWeekdays');
+  const calendarGrid = document.getElementById('calendarGrid');
+  const dayDetail = document.getElementById('dayDetail');
+
+  // ---------- Функции ----------
+  function fmt(n){ return n.toLocaleString('ru-RU'); }
 
   function renderShiftDate(){
     shiftDate.textContent = 'СМЕНА · ' + currentDate.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit', year:'numeric' });
   }
-  renderShiftDate();
-
-  function fmt(n){ return n.toLocaleString('ru-RU'); }
 
   function renderLines(){
+    console.log('🎨 Отрисовка карточек заданий...');
     linesEl.innerHTML = '';
     categories.forEach((c, i) => {
       const card = document.createElement('div');
@@ -528,14 +593,27 @@
         <div class="line-task">${c.task}</div>
         <div class="line-footer">
           <span class="xp-tag">+${c.xp} XP</span>
-          <button class="done-btn" data-i="${i}" ${(c.done || !shiftIsActive) ? 'disabled' : ''}>${c.done ? 'Выполнено' : 'Отметить'}</button>
+          <button class="done-btn" data-i="${i}" ${(c.done || !shiftIsActive) ? 'disabled' : ''}>${c.done ? '✓ Выполнено' : 'Отметить'}</button>
         </div>
       `;
       linesEl.appendChild(card);
     });
-    linesEl.querySelectorAll('.done-btn').forEach(btn => {
-      btn.addEventListener('click', () => completeTask(parseInt(btn.dataset.i)));
+    
+    // Вешаем обработчики на кнопки
+    document.querySelectorAll('.done-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const i = parseInt(this.getAttribute('data-i'));
+        completeTask(i);
+      });
+      btn.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        const i = parseInt(this.getAttribute('data-i'));
+        completeTask(i);
+      });
     });
+    
+    console.log('✅ Карточки отрисованы');
   }
 
   function updateDial(){
@@ -552,43 +630,55 @@
     doneTodayVal.textContent = `${doneCount} / ${categories.length}`;
   }
 
-  let shiftIsActive = loaded ? loaded : false;
-
   function completeTask(i){
-    if (!shiftIsActive) return;
+    console.log('🔄 Выполнение задания:', i);
+    if (!shiftIsActive) {
+      console.log('❌ Смена не активна');
+      return;
+    }
     const c = categories[i];
-    if (c.done) return;
+    if (c.done) {
+      console.log('❌ Уже выполнено');
+      return;
+    }
+    
     c.done = true;
     c.progress = Math.min(100, c.progress + 8);
     xp += c.xp;
     totalXp += c.xp;
+    
     while (xp >= xpToNext){
       xp -= xpToNext;
       level += 1;
       xpToNext = Math.round(xpToNext * 1.12);
     }
+    
     renderLines();
     updateDial();
     updateAiPanel();
     bumpTodayBar(c.xp);
+    
     const today = dayHistory[dayHistory.length-1];
     today.tasks.push({ category:c.name, task:c.task, xp:c.xp, color:c.color });
     today.xp = values[values.length-1];
+    
     saveState();
+    console.log('✅ Задание выполнено:', c.name);
   }
 
-  const assignBtn = document.getElementById('assignBtn');
-  const aiSubtext = document.getElementById('aiSubtext');
-
   function assignNewTask(){
+    console.log('🔄 Назначение нового задания');
     if (!shiftIsActive) return;
     const pending = categories.filter(c => !c.done);
     if (!pending.length) return;
+    
     const c = pending[Math.floor(Math.random()*pending.length)];
     const options = c.pool.filter(t => t !== c.task);
     c.task = options[Math.floor(Math.random()*options.length)] || c.task;
+    
     renderLines();
     saveState();
+    console.log('✅ Новое задание для:', c.name);
   }
 
   function updateAiPanel(){
@@ -602,21 +692,11 @@
         : 'распределяет задания по участкам, чтобы нагрузка не была впустую';
   }
 
-  assignBtn.addEventListener('click', assignNewTask);
-
-  // ---------- monthly chart ----------
-  const chartEl = document.getElementById('chart');
-  const days = 30;
-  const values = loaded ? [...values] : [];
-  const dayHistory = loaded ? [...dayHistory] : [];
-  
-  let chartMax = loaded ? Math.max(...values, 200) : 200;
-
   function renderChart(){
     chartEl.innerHTML = '';
     values.forEach((v,i) => {
       const bar = document.createElement('div');
-      bar.className = 'bar' + (i === days-1 ? ' today' : '');
+      bar.className = 'bar' + (i === 29 ? ' today' : '');
       bar.style.height = Math.max(3, (v/chartMax)*100) + '%';
       bar.title = v + ' XP';
       chartEl.appendChild(bar);
@@ -630,36 +710,39 @@
     renderChart();
   }
 
-  const startShiftBtn = document.getElementById('startShiftBtn');
-  const closeShiftBtn = document.getElementById('closeShiftBtn');
-  const statusDot = document.getElementById('statusDot');
-  const statusText = document.getElementById('statusText');
-
   function setShiftStatus(active){
     shiftIsActive = active;
-    statusDot.classList.toggle('inactive', !active);
-    statusText.classList.toggle('inactive', !active);
+    
+    if (active) {
+      statusDot.classList.remove('inactive');
+      statusText.classList.remove('inactive');
+    } else {
+      statusDot.classList.add('inactive');
+      statusText.classList.add('inactive');
+    }
+    
     statusText.textContent = active ? 'Смена активна' : 'Смена не начата';
     startShiftBtn.classList.toggle('hidden', active);
     closeShiftBtn.classList.toggle('hidden', !active);
     saveState();
   }
-  setShiftStatus(shiftIsActive);
 
   function startShift(){
+    console.log('🔄 Запуск смены');
     if (shiftIsActive) return;
     setShiftStatus(true);
     renderLines();
     updateAiPanel();
+    console.log('✅ Смена запущена');
   }
-  startShiftBtn.addEventListener('click', startShift);
 
   function closeShift(){
+    console.log('🔄 Закрытие смены');
     if (!shiftIsActive) return;
+    
     const allDone = categories.every(c => c.done);
     streak = allDone ? streak + 1 : 0;
 
-    // roll the monthly log forward
     values.shift();
     values.push(0);
     dayHistory.shift();
@@ -668,7 +751,6 @@
     dayHistory.push({ date: tomorrow.toISOString(), xp:0, tasks:[] });
     chartMax = Math.max(...values, 200);
 
-    // reset the shift
     categories.forEach(c => {
       c.done = false;
       const options = c.pool.filter(t => t !== c.task);
@@ -683,17 +765,10 @@
     updateAiPanel();
     renderChart();
     saveState();
+    console.log('✅ Смена закрыта');
   }
-  closeShiftBtn.addEventListener('click', closeShift);
 
-  // ---------- calendar modal ----------
-  const calendarBtn = document.getElementById('calendarBtn');
-  const modalBackdrop = document.getElementById('modalBackdrop');
-  const modalClose = document.getElementById('modalClose');
-  const calendarWeekdays = document.getElementById('calendarWeekdays');
-  const calendarGrid = document.getElementById('calendarGrid');
-  const dayDetail = document.getElementById('dayDetail');
-
+  // ---------- Календарь ----------
   ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].forEach(w => {
     const el = document.createElement('div');
     el.textContent = w;
@@ -701,20 +776,17 @@
   });
 
   function dateForIndex(i){
-    const d = new Date(dayHistory[i].date);
-    return d;
+    return new Date(dayHistory[i].date);
   }
 
   function openCalendar(){
     renderCalendar();
     modalBackdrop.classList.add('open');
   }
+  
   function closeCalendar(){
     modalBackdrop.classList.remove('open');
   }
-  calendarBtn.addEventListener('click', openCalendar);
-  modalClose.addEventListener('click', closeCalendar);
-  modalBackdrop.addEventListener('click', (e) => { if (e.target === modalBackdrop) closeCalendar(); });
 
   function renderCalendar(){
     calendarGrid.innerHTML = '';
@@ -727,14 +799,23 @@
       cell.style.background = rec.xp > 0 ? `rgba(232,163,61,${(0.12 + intensity*0.55).toFixed(2)})` : 'transparent';
       cell.textContent = d.getDate();
       cell.title = d.toLocaleDateString('ru-RU') + ' — ' + rec.xp + ' XP';
-      cell.addEventListener('click', () => selectDay(i));
+      
+      cell.addEventListener('click', function() { selectDay(i); });
+      cell.addEventListener('touchend', function(e) { 
+        e.preventDefault(); 
+        selectDay(i); 
+      });
+      
       calendarGrid.appendChild(cell);
     });
     dayDetail.innerHTML = '<p class="day-detail-placeholder">Выбери день, чтобы посмотреть, что было сделано</p>';
   }
 
   function selectDay(i){
-    calendarGrid.querySelectorAll('.day-cell').forEach((el, idx) => el.classList.toggle('selected', idx === i));
+    document.querySelectorAll('.day-cell').forEach((el, idx) => {
+      el.classList.toggle('selected', idx === i);
+    });
+    
     const rec = dayHistory[i];
     const d = dateForIndex(i);
     const dateStr = d.toLocaleDateString('ru-RU', { day:'2-digit', month:'long', year:'numeric', weekday:'long' });
@@ -761,10 +842,69 @@
     `;
   }
 
+  // ---------- Обработчики событий ----------
+  startShiftBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    startShift();
+  });
+  startShiftBtn.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    startShift();
+  });
+  
+  closeShiftBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    closeShift();
+  });
+  closeShiftBtn.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    closeShift();
+  });
+  
+  assignBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    assignNewTask();
+  });
+  assignBtn.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    assignNewTask();
+  });
+  
+  calendarBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    openCalendar();
+  });
+  calendarBtn.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    openCalendar();
+  });
+  
+  modalClose.addEventListener('click', function(e) {
+    e.preventDefault();
+    closeCalendar();
+  });
+  modalClose.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    closeCalendar();
+  });
+  
+  modalBackdrop.addEventListener('click', function(e) { 
+    if (e.target === modalBackdrop) closeCalendar(); 
+  });
+
+  // ---------- Инициализация ----------
+  console.log('🚀 Запуск приложения СМЕНА');
+  renderShiftDate();
+  setShiftStatus(shiftIsActive);
   renderLines();
   updateDial();
   updateAiPanel();
   renderChart();
+  console.log('✅ Приложение готово к работе');
+  console.log('📊 Уровень:', level, '| XP:', xp, '/', xpToNext);
+  console.log('📅 Смена активна:', shiftIsActive);
+  
+}); // Конец DOMContentLoaded
 </script>
 </body>
 </html>
